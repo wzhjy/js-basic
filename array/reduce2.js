@@ -32,8 +32,9 @@ if (!Array.prototype.reduce) {
         // can't find initValue;
         throw new TypeError('Reduce with no initial value')
       }
+      // value = thisObject[k++]
       value = thisObject[k];
-      k++;
+      k++; 
     }
     while (k < len) {
       if (k in thisObject) {
