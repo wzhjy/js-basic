@@ -25,3 +25,12 @@ if (!Array.prototype.map) {
         return newArray;
     }
 }
+
+// test cases
+[1,2,3].map(a => a % 2); // [1,0,1]
+const map = [].map;
+map.call('123', (a) => Number(a) % 2); // [1,0,1]
+map.call(123, (a) => a ); // []
+map.call({length: 100, 1: 2}, (a) => a); // [empty, 2, empty * 98]
+map.call(function (a,b) { return a + b}, (a) => a); 
+// function.length = params.length // [empty * 2]
