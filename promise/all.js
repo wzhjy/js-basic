@@ -77,3 +77,73 @@ function test2() {
 }
 
 test2();
+
+
+function test3() {
+  const p = Promise.all([]); // Will be immediately resolved
+  const p2 = Promise.all([1337, "hi"]); // Non-promise values are ignored, but the evaluation is done asynchronously
+  console.log(p);
+  console.log(p2);
+  setTimeout(() => {
+    console.log("the queue is now empty");
+    console.log(p2);
+  });
+
+  // Logs:
+  // Promise { <state>: "fulfilled", <value>: Array[0] }
+  // Promise { <state>: "pending" }
+  // the queue is now empty
+  // Promise { <state>: "fulfilled", <value>: Array[2] }
+}
+
+test3();
+
+function test4() {
+  const p1 = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("one"), 1000);
+  });
+  const p2 = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("two"), 2000);
+  });
+  const p3 = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("three"), 3000);
+  });
+  const p4 = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("four"), 4000);
+  });
+  const p5 = new Promise((resolve, reject) => {
+    reject(new Error("reject"));
+  });
+
+  // Using .catch:
+  Promise.all([p1, p2, p3, p4, p5])
+    .then((values) => {
+      console.log(values);
+    })
+    .catch((error) => {
+      console.error(error.message);
+    });
+  // Logs:
+  // "reject"
+}
+
+test4();
+
+function test5() {
+  const p1 = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("p1_delayed_resolution"), 1000);
+  });
+
+  const p2 = new Promise((resolve, reject) => {
+    reject(new Error("p2_immediate_rejection"));
+  });
+
+  Promise.all([p1.catch((error) => error), p2.catch((error) => error)]).then(
+    (values) => {
+      console.log(values[0]); // "p1_delayed_resolution"
+      console.error(values[1]); // "Error: p2_immediate_rejection"
+    },
+  );
+}
+
+test5();
